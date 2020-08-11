@@ -1,8 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import ReactAudioPlayer from 'react-audio-player';
 import {useDropzone} from 'react-dropzone'
-
+import {initialize, useDatu} from 'datu'
+import 'firebase/storage'
+import * as firebase from "firebase/app"
 
 const songs = [
   {name:"Ain't no rest for the Wicked", path: "CagetheElephant"},
@@ -10,16 +12,21 @@ const songs = [
 ]
 
 function App() {
+  const [messages, send] = useDatu()
+  console.log(messages)
   const [selected,setSelected] = useState('')
+  const allSongs = [...songs, ...messages]
   return (
     <div className="App">
-      {songs.map((s,i)=>{
+      {allSongs.map((s,i)=>{
         return <Song key={i} song={s}
           selected={selected===s.name}
           onSelect={()=> setSelected(s.name)}
         />
       })}
-      <MyDropzone />
+      <div className="upload">
+        <MyDropzone send={send}/>
+      </div>
     </div>
   );
 }
@@ -38,7 +45,16 @@ function Song(props){
 function MyDropzone() {
   const onDrop = useCallback(acceptedFiles => {
     // Do something with the files
-    console.log(acceptedFiles)
+    const file = acceptedFiles[0]
+    var storageRef = firebase.storage().ref();
+    var ref = storageRef.child(file.name);
+    ref.put(file).then(function(snapshot) {
+      console.log('Uploaded a blob or file!');
+      send({
+        name: file.name,
+        file: `https://firebasestorage.googleapis.com/v0/b/playlist-2020.appspot.com/o/${file.name}?alt=media`
+      })
+    });
   }, [])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
   return (
@@ -58,3 +74,14 @@ function MyDropzone() {
 }
 
 export default App;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAI1eDbNS_I5QypZ9Lk_5nq385B3bNIb-g",
+  authDomain: "playlist-e0780.firebaseapp.com",
+  databaseURL: "https://playlist-e0780.firebaseio.com",
+  projectId: "playlist-e0780",
+  storageBucket: "playlist-e0780.appspot.com",
+  messagingSenderId: "757302387694",
+  appId: "1:757302387694:web:497bc9e36f30548bd524ff"
+};
+initialize(firebaseConfig)
