@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import './App.css';
 import ReactAudioPlayer from 'react-audio-player';
+import {useDropzone} from 'react-dropzone'
+
 
 const songs = [
   {name:"Ain't no rest for the Wicked", path: "CagetheElephant"},
@@ -17,6 +19,7 @@ function App() {
           onSelect={()=> setSelected(s.name)}
         />
       })}
+      <MyDropzone />
     </div>
   );
 }
@@ -30,6 +33,28 @@ function Song(props){
       controls
     />}
   </div>
+}
+
+function MyDropzone() {
+  const onDrop = useCallback(acceptedFiles => {
+    // Do something with the files
+    console.log(acceptedFiles)
+  }, [])
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+  return (
+    <div {...getRootProps()} style={{
+        fontSize:11, padding:30, width:300, margin:'10px', textAlign:'center',
+        color:isDragActive?'white':'grey',
+        border:isDragActive?'2px dashed white':'2px dashed grey'
+      }}>
+      <input {...getInputProps()} />
+      {
+        isDragActive ?
+          <p>Drop the files here ...</p> :
+          <p>Drag 'n' drop some files here, or click to select files</p>
+      }
+    </div>
+  )
 }
 
 export default App;
