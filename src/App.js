@@ -3,31 +3,30 @@ import './App.css';
 import ReactAudioPlayer from 'react-audio-player';
 
 const songs = [
-  {name:"Ain't no rest for the Wicked", path: "/music/CagetheElephant"},
-  {name:"A Boy Named Sue", path: "/music/JohnnyCash.mp3"}
+  {name:"Ain't no rest for the Wicked", path: "CagetheElephant"},
+  {name:"A Boy Named Sue", path: "JohnnyCash.mp3"}
 ]
 
 function App() {
-  const [selected, setSelected] = useState('')
+  const [selected,setSelected] = useState('')
   return (
     <div className="App">
-      {songs.map((s,i)=> {
+      {songs.map((s,i)=>{
         return <Song key={i} song={s}
-          selected={selected===s.name} // boolean
+          selected={selected===s.name}
           onSelect={()=> setSelected(s.name)}
         />
-      }
-      )}
+      })}
     </div>
   );
 }
 
-function Song(props) {
-  const {song, selected, onSelect} = props;
+function Song(props){
+  const {song, selected, onSelect} = props
   return <div>
     <div onClick={onSelect}>{song.name}</div>
     {selected && <ReactAudioPlayer
-      src={"/music/" + song.path}
+      src={"/music/"+song.path}
       controls
     />}
   </div>
