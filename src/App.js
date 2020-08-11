@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import ReactAudioPlayer from 'react-audio-player';
+
+const songs = [
+  {name:"Ain't no rest for the Wicked", path: "/music/CagetheElephant"},
+  {name:"A Boy Named Sue", path: "/music/JohnnyCash.mp3"}
+]
 
 function App() {
+  const [selected, setSelected] = useState('')
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {songs.map((s,i)=> {
+        return <Song key={i} song={s}
+          selected={selected===s.name} // boolean
+          onSelect={()=> setSelected(s.name)}
+        />
+      }
+      )}
     </div>
   );
+}
+
+function Song(props) {
+  const {song, selected, onSelect} = props;
+  return <div>
+    <div onClick={onSelect}>{song.name}</div>
+    {selected && <ReactAudioPlayer
+      src={"/music/" + song.path}
+      controls
+    />}
+  </div>
 }
 
 export default App;
